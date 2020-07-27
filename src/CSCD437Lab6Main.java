@@ -29,45 +29,45 @@ public class CSCD437Lab6Main {
 
 		boolean validName = false;
 
-//		do {
-//			System.out.println("Enter last name:");
-//			lastName = kb.nextLine();
-//			if (validateString(lastName, "name")) {
-//
-//				System.out.println("Enter first name:");
-//				firstName = kb.nextLine();
-//				validName = validateString(firstName, "name");
-//			}
-//
-//		} while (!validName);
-//
-//		boolean validInt = false;
-//		do {
-//			System.out.println("Enter first int:");
-//			try {
-//				first = Integer.parseInt(kb.nextLine());
-//				System.out.println("Enter second int:");
-//				second = Integer.parseInt(kb.nextLine());
-//				validInt = true;
-//			} catch (NumberFormatException e) {
-//				System.out.println("Integer is invalid.");
-//				System.err.println("Integer is invalid.");
-//			}
-//		} while (!validInt);
-//
-//		boolean validFileName = false;
-//		do {
-//			System.out.println("Enter input filename:");
-//			inFilename = kb.nextLine();
-//			validFileName = validateString(inFilename, "filename");
-//		} while (!validFileName);
-//
-//		validFileName = false;
-//		do {
-//			System.out.println("Enter output filename:");
-//			outFilename = kb.nextLine();
-//			validFileName = validateString(outFilename, "filename");
-//		} while (!validFileName);
+		do {
+			System.out.println("Enter last name:");
+			lastName = kb.nextLine();
+			if (validateString(lastName, "name")) {
+
+				System.out.println("Enter first name:");
+				firstName = kb.nextLine();
+				validName = validateString(firstName, "name");
+			}
+
+		} while (!validName);
+
+		boolean validInt = false;
+		do {
+			System.out.println("Enter first int:");
+			try {
+				first = Integer.parseInt(kb.nextLine());
+				System.out.println("Enter second int:");
+				second = Integer.parseInt(kb.nextLine());
+				validInt = true;
+			} catch (NumberFormatException e) {
+				System.out.println("Integer is invalid.");
+				System.err.println("Integer is invalid.");
+			}
+		} while (!validInt);
+
+		boolean validFileName = false;
+		do {
+			System.out.println("Enter input filename:");
+			inFilename = kb.nextLine();
+			validFileName = validateString(inFilename, "filename");
+		} while (!validFileName);
+
+		validFileName = false;
+		do {
+			System.out.println("Enter output filename:");
+			outFilename = kb.nextLine();
+			validFileName = validateString(outFilename, "filename");
+		} while (!validFileName);
 
 		boolean validPassword = false;
 		do {
@@ -76,30 +76,35 @@ public class CSCD437Lab6Main {
 			validPassword = validateString(password, "password");
 
 			if (validPassword) {
-				SecureRandom random = new SecureRandom();
-				byte[] salt = new byte[16];
-				random.nextBytes(salt);
+				String salt = BCrypt.gensalt();
+				BCrypt.hashpw(password, salt);
+				File passwordFile = new File("passwords.txt");
 				try {
-					MessageDigest messageDigest = MessageDigest.getInstance("SHA-512");
-					messageDigest.update(salt);
-					byte[] hashedPassword = messageDigest.digest(password.getBytes(StandardCharsets.UTF_8));
-
-					System.out.println("Retype password:");
-					String retype = kb.nextLine();
-					validPassword = validateString(retype, "password");
-					if (validPassword) {
-						byte[] hashedRetype = messageDigest.digest(retype.getBytes(StandardCharsets.UTF_8));
-						if (messageDigest.isEqual(hashedPassword, hashedRetype)) {
-							System.out.println("Passwords matched.");
-						} else {
-							System.out.println("Passwords did not match.");
-							System.err.println("Passwords did not match.");
-							validPassword = false;
-						}
+					PrintStream printStream = new PrintStream(passwordFile);
+					printStream.println(BCrypt.hashpw(password, salt));
+				} catch (IOException e) {
+					System.out.println("Could not create password file.");
+					System.err.println("Could not create password file.");
+				}
+				System.out.println("Retype password:");
+				String retype = kb.nextLine();
+				validPassword = validateString(retype, "password");
+				String hashedPassword = "";
+				if (validPassword) {
+					try {
+						Scanner scanner = new Scanner(passwordFile);
+						hashedPassword = scanner.nextLine();
+						scanner.close();
+					} catch (FileNotFoundException e) {
+						System.out.println("Could not find passwords.txt");
 					}
-				} catch (NoSuchAlgorithmException e) {
-					System.out.println("Could not generate a salt.");
-					System.err.println("Could not generate a salt.");
+					if (BCrypt.checkpw(retype, hashedPassword)) {
+						System.out.println("Passwords matched.");
+					} else {
+						System.out.println("Passwords did not match.");
+						System.err.println("Passwords did not match.");
+						validPassword = false;
+					}
 				}
 			}
 		} while (!validPassword);
@@ -116,6 +121,10 @@ public class CSCD437Lab6Main {
 			while (inputFileReader.hasNextLine()) {
 				outputPrintStream.println(inputFileReader.nextLine());
 			}
+			inputFileReader.close();
+			outputPrintStream.close();
+			errorOutputStream.close();
+			kb.close();
 		} catch (FileNotFoundException e) {
 			System.out.println("Could not create output file.");
 			System.err.println("Could not create output file.");
