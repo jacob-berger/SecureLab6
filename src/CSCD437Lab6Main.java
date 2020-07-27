@@ -1,12 +1,17 @@
 import java.io.*;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
+import java.util.Arrays;
 import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class CSCD437Lab6Main {
 
-	private static PrintStream errorOutputStream, inputPrintStream, outputPrintStream;
-	private static String lastName, firstName, inFilename, outFilename, hashedPassword;
+	private static PrintStream errorOutputStream, outputPrintStream;
+	private static String lastName, firstName, inFilename, outFilename;
 	private static int first, second;
 
 
@@ -24,57 +29,80 @@ public class CSCD437Lab6Main {
 
 		boolean validName = false;
 
-		do {
-			System.out.println("Enter last name:");
-			lastName = kb.nextLine();
-			if (validateName(lastName)) {
-
-				System.out.println("Enter first name:");
-				firstName = kb.nextLine();
-				validName = validateName(firstName);
-			}
-
-		} while (!validName);
-
-		boolean validInt = false;
-		do {
-			System.out.println("Enter first int:");
-			try {
-				first = Integer.parseInt(kb.nextLine());
-				System.out.println("Enter second int:");
-				second = Integer.parseInt(kb.nextLine());
-				validInt = true;
-			} catch (NumberFormatException e) {
-				System.out.println("Integer is invalid.");
-				System.err.println("Integer is invalid.");
-			}
-		} while (!validInt);
-
-		boolean validFileName = false;
-		do {
-			System.out.println("Enter input filename:");
-			inFilename = kb.nextLine();
-			validFileName = validateFilename(inFilename);
-		} while (!validFileName);
-
-//		boolean validFileName = false;
-		validFileName = false;
-		do {
-			System.out.println("Enter output filename:");
-			outFilename = kb.nextLine();
-			validFileName = validateFilename(outFilename);
-		} while (!validFileName);
-
-//		boolean validPassword = false;
 //		do {
-//			System.out.println("Enter a password:");
-//			String password = kb.nextLine();
-//			validPassword = validatePassword(password);
+//			System.out.println("Enter last name:");
+//			lastName = kb.nextLine();
+//			if (validateString(lastName, "name")) {
 //
-//			if (validPassword) {
-//				System.out.println("TODO: PASSWORD");
+//				System.out.println("Enter first name:");
+//				firstName = kb.nextLine();
+//				validName = validateString(firstName, "name");
 //			}
-//		} while (!validPassword);
+//
+//		} while (!validName);
+//
+//		boolean validInt = false;
+//		do {
+//			System.out.println("Enter first int:");
+//			try {
+//				first = Integer.parseInt(kb.nextLine());
+//				System.out.println("Enter second int:");
+//				second = Integer.parseInt(kb.nextLine());
+//				validInt = true;
+//			} catch (NumberFormatException e) {
+//				System.out.println("Integer is invalid.");
+//				System.err.println("Integer is invalid.");
+//			}
+//		} while (!validInt);
+//
+//		boolean validFileName = false;
+//		do {
+//			System.out.println("Enter input filename:");
+//			inFilename = kb.nextLine();
+//			validFileName = validateString(inFilename, "filename");
+//		} while (!validFileName);
+//
+//		validFileName = false;
+//		do {
+//			System.out.println("Enter output filename:");
+//			outFilename = kb.nextLine();
+//			validFileName = validateString(outFilename, "filename");
+//		} while (!validFileName);
+
+		boolean validPassword = false;
+		do {
+			System.out.println("Enter a password:");
+			String password = kb.nextLine();
+			validPassword = validateString(password, "password");
+
+			if (validPassword) {
+				SecureRandom random = new SecureRandom();
+				byte[] salt = new byte[16];
+				random.nextBytes(salt);
+				try {
+					MessageDigest messageDigest = MessageDigest.getInstance("SHA-512");
+					messageDigest.update(salt);
+					byte[] hashedPassword = messageDigest.digest(password.getBytes(StandardCharsets.UTF_8));
+
+					System.out.println("Retype password:");
+					String retype = kb.nextLine();
+					validPassword = validateString(retype, "password");
+					if (validPassword) {
+						byte[] hashedRetype = messageDigest.digest(retype.getBytes(StandardCharsets.UTF_8));
+						if (messageDigest.isEqual(hashedPassword, hashedRetype)) {
+							System.out.println("Passwords matched.");
+						} else {
+							System.out.println("Passwords did not match.");
+							System.err.println("Passwords did not match.");
+							validPassword = false;
+						}
+					}
+				} catch (NoSuchAlgorithmException e) {
+					System.out.println("Could not generate a salt.");
+					System.err.println("Could not generate a salt.");
+				}
+			}
+		} while (!validPassword);
 
 		File output = new File(outFilename);
 		try {
@@ -91,67 +119,48 @@ public class CSCD437Lab6Main {
 		} catch (FileNotFoundException e) {
 			System.out.println("Could not create output file.");
 			System.err.println("Could not create output file.");
-		} catch (IOException e) {
-			System.out.println("Could not read from input file.");
-			System.err.println("Could not read from input file.");
 		}
 
 	}
 
-	private static boolean validatePassword(String password) {
+	private static boolean validateString(String input, String type) {
 
-		Pattern pattern = Pattern.compile("^$");
-		Matcher matcher = pattern.matcher(password);
-		boolean matched = matcher.matches();
-
-		return matched;
-
-	}
-
-	private static boolean validateFilename(String filename) {
-		if (filename == null || filename.length() < 1) {
-			System.err.println("Filename was null or empty.");
-			System.out.println("Filename was null or empty.");
-			return false;
-		}
-		if (filename.length() > 50) {
-			System.err.println("Filename was too long.");
-			System.out.println("Filename was too long.");
-			return false;
-		}
-
-		Pattern pattern = Pattern.compile("^[\\p{Alnum}\\p{Punct}&&[^\\\\<>:\"/?|*]]+$");
-		Matcher matcher = pattern.matcher(filename);
-		boolean matched = matcher.matches();
-		if (!matched) {
-			System.err.println("Entered filename is invalid.");
-			System.out.println("Entered filename is invalid.");
-		}
-
-		return matched;
-
-	}
-
-	private static boolean validateName(String input) {
 		if (input == null || input.length() < 1) {
-			System.err.println("Name was null or empty.");
-			System.out.println("Name was null or empty.");
+			System.err.println(type + " was null or empty.");
+			System.out.println(type + " was null or empty.");
 			return false;
 		}
+
 		if (input.length() > 50) {
-			System.err.println("Name was too long.");
-			System.out.println("Name was too long.");
+			System.err.println(type + " was too long.");
+			System.out.println(type + " was too long.");
 			return false;
 		}
-		Pattern pattern = Pattern.compile("^[A-Za-z]+(\\s[A-Za-z]*)*$");
+
+		Pattern pattern = null;
+		switch (type) {
+			case "filename":
+				pattern = Pattern.compile("^[\\p{Alnum}\\p{Punct}&&[^\\\\<>:\"/?|*]]+$");
+				break;
+			case "password":
+				pattern = Pattern.compile("^[\\p{Alnum}\\p{Punct}\\s]+$");
+				break;
+			case "name":
+				pattern = Pattern.compile("^[A-Za-z]+(\\s[A-Za-z]*)*$");
+				break;
+			default:
+				return false;
+		}
+
 		Matcher matcher = pattern.matcher(input);
 		boolean matched = matcher.matches();
 		if (!matched) {
-			System.err.println("Entered name is invalid.");
-			System.out.println("Entered name is invalid.");
+			System.err.println("Entered input is invalid.");
+			System.out.println("Entered input is invalid.");
 		}
 
 		return matched;
+
 	}
 
 }
