@@ -1,5 +1,5 @@
 #include <stdio.h>
-#include <stdlib.h>
+#include <regex.h>
 #include <string.h>
 #include <stdbool.h>
 
@@ -158,27 +158,29 @@ int secondInt(){
 int fileOpen(){
 	int overflow, ch, i;
 	FILE *fp;
-	puts("Please enter file name: ");
+	printf("Please enter file name: ");
 	
-	if(scanf("%1023s[^\n]", output_file_name) != 1){
+	if(scanf("%50[a-zA-Z0-9\\.,_-]", output_file_name) != 1){
+	    printf("Entered name was: \"%s\"\n", output_file_name);
+        while (getchar() != '\n');
 		fputs("wrong input. \n", stderr);
 		return 1;
 	}
-	if(output_file_name == NULL){
-		printf("Invalid input!\n");
-		return 1; //no input
-	}
-	if(output_file_name[strlen(output_file_name-1)] != '\n'){	
-		overflow = 0;
-		while(((ch = getchar()) != '\n') && (ch != EOF))
-			overflow = 1;
-	}
-	if(overflow == 1){
-		return 2; //input is longer then 255 characters
-	}
-	if(validateFileNameInput(output_file_name) == 1){
-		return 3; //not all letters
-	}
+//	if(output_file_name == NULL){
+//		printf("Invalid input!\n");
+//		return 1; //no input
+//	}
+//	if(output_file_name[strlen(output_file_name-1)] != '\n'){
+//		overflow = 0;
+//		while(((ch = getchar()) != '\n') && (ch != EOF))
+//			overflow = 1;
+//	}
+//	if(overflow == 1){
+//		return 2; //input is longer then 255 characters
+//	}
+//	if(validateFileNameInput(output_file_name) == 1){
+//		return 3; //not all letters
+//	}
 	
 	if((fp= fopen(output_file_name, "wt")) == NULL){
 		return 1;
@@ -189,6 +191,9 @@ int fileOpen(){
 	//fputs(first_number, fp);
 	
 	fclose(fp);
+
+	printf("Input accepted\n");
+	printf("Your entry was: \"%s\"\n", output_file_name);
 	return 0;
 }
 
@@ -248,11 +253,11 @@ void intMath(int first, int second) {
 
 }
 main(void){
-	firstNameHelper();
-	lastNameHelper();
+//	firstNameHelper();
+//	lastNameHelper();
 //	firstIntHelper();
 //	secondIntHelper();
-    getNumbers();
+//    getNumbers();
 	fileOpenHelper();
 	printf("Name: %s, %s\n", last_name, first_name);
 	printf("First Number: %d, ", first);
@@ -307,27 +312,3 @@ void getNumbers() {
     printf("Product: %d\n", product);
 
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
