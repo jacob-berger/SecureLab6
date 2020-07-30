@@ -1,15 +1,20 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdbool.h>
+
 static char first_name[51];
 static char last_name[51];
 static char input_file_name[256];
 static char output_file_name[256];
-static int first_number[16];
-static int second_number[16];
+int first_number[16];
+int second_number[16];
+int sum, product, first, second;
 
 
 //this code is will
+
+void getNumbers();
 
 int validateLetterInput(char *s){
 	const char *valid_chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
@@ -223,6 +228,7 @@ int firstIntHelper(){
 		i = firstInt();
 		printf("%d\n", i);
 	}while(i > 0);
+
 	return 0;
 }
 
@@ -236,19 +242,73 @@ int secondIntHelper(){
 	return 0;
 }
 
-int
+void intMath(int first, int second) {
+
+    product = first * second;
+
+}
 main(void){
 	firstNameHelper();
 	lastNameHelper();
-	firstIntHelper();
-	secondIntHelper();
+//	firstIntHelper();
+//	secondIntHelper();
+    getNumbers();
 	fileOpenHelper();
-	printf("Name: %s, %s\n", first_name, last_name);
-	printf("First Number: %ls ,", first_number);
-	printf("Second Number: %ls\n", second_number);	
+	printf("Name: %s, %s\n", last_name, first_name);
+	printf("First Number: %d, ", first);
+	printf("Second Number: %d\n", second);
 	
 return 0;
 }
+
+void getNumbers() {
+
+    bool valid = false;
+    do {
+        printf("Enter first number:\n");
+        int n = 0;
+        scanf("%d", &n);
+        getchar();
+        if (n == EOF) {
+            printf("EOF encountered\n");
+        } else if (n == 0) {
+            printf("Invalid input\n");
+        } else {
+            printf("Your number was: %d\n", n);
+            first = n;
+            printf("%d\n", first);
+            valid = true;
+        }
+    } while (!valid);
+
+    valid = false;
+
+    do {
+        printf("Enter second number:\n");
+        int n = 0;
+        scanf("%d", &n);
+        getchar();
+        if (n == EOF) {
+            printf("EOF encountered\n");
+        } else if (n == 0) {
+            printf("Invalid input\n");
+        } else {
+            printf("Your number was: %d\n", n);
+            second = n;
+            printf("%d\n", second);
+            valid = true;
+        }
+    } while (!valid);
+
+    sum = first + second;
+    product = first * second;
+
+    printf("Sum: %d\n", sum);
+    printf("Product: %d\n", product);
+
+}
+
+
 
 
 
