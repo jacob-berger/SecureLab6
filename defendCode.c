@@ -1,15 +1,20 @@
 #include <stdio.h>
-#include <stdlib.h>
+#include <regex.h>
 #include <string.h>
+#include <stdbool.h>
+
 static char first_name[51];
 static char last_name[51];
 static char input_file_name[256];
 static char output_file_name[256];
-static int first_number[16];
-static int second_number[16];
+int first_number[16];
+int second_number[16];
+int sum, product, first, second;
 
 
 //this code is will
+
+void getNumbers();
 
 int validateLetterInput(char *s){
 	const char *valid_chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
@@ -153,27 +158,29 @@ int secondInt(){
 int fileOpen(){
 	int overflow, ch, i;
 	FILE *fp;
-	puts("Please enter file name: ");
+	printf("Please enter file name: ");
 	
-	if(scanf("%1023s[^\n]", output_file_name) != 1){
+	if(scanf("%50[a-zA-Z0-9\\.,_-]", output_file_name) != 1){
+	    printf("Entered name was: \"%s\"\n", output_file_name);
+        while (getchar() != '\n');
 		fputs("wrong input. \n", stderr);
 		return 1;
 	}
-	if(output_file_name == NULL){
-		printf("Invalid input!\n");
-		return 1; //no input
-	}
-	if(output_file_name[strlen(output_file_name-1)] != '\n'){	
-		overflow = 0;
-		while(((ch = getchar()) != '\n') && (ch != EOF))
-			overflow = 1;
-	}
-	if(overflow == 1){
-		return 2; //input is longer then 255 characters
-	}
-	if(validateFileNameInput(output_file_name) == 1){
-		return 3; //not all letters
-	}
+//	if(output_file_name == NULL){
+//		printf("Invalid input!\n");
+//		return 1; //no input
+//	}
+//	if(output_file_name[strlen(output_file_name-1)] != '\n'){
+//		overflow = 0;
+//		while(((ch = getchar()) != '\n') && (ch != EOF))
+//			overflow = 1;
+//	}
+//	if(overflow == 1){
+//		return 2; //input is longer then 255 characters
+//	}
+//	if(validateFileNameInput(output_file_name) == 1){
+//		return 3; //not all letters
+//	}
 	
 	if((fp= fopen(output_file_name, "wt")) == NULL){
 		return 1;
@@ -184,6 +191,9 @@ int fileOpen(){
 	//fputs(first_number, fp);
 	
 	fclose(fp);
+
+	printf("Input accepted\n");
+	printf("Your entry was: \"%s\"\n", output_file_name);
 	return 0;
 }
 
@@ -223,6 +233,7 @@ int firstIntHelper(){
 		i = firstInt();
 		printf("%d\n", i);
 	}while(i > 0);
+
 	return 0;
 }
 
@@ -236,38 +247,68 @@ int secondIntHelper(){
 	return 0;
 }
 
-int
+void intMath(int first, int second) {
+
+    product = first * second;
+
+}
 main(void){
-	firstNameHelper();
-	lastNameHelper();
-	firstIntHelper();
-	secondIntHelper();
+//	firstNameHelper();
+//	lastNameHelper();
+//	firstIntHelper();
+//	secondIntHelper();
+//    getNumbers();
 	fileOpenHelper();
-	printf("Name: %s, %s\n", first_name, last_name);
-	printf("First Number: %ls ,", first_number);
-	printf("Second Number: %ls\n", second_number);	
+	printf("Name: %s, %s\n", last_name, first_name);
+	printf("First Number: %d, ", first);
+	printf("Second Number: %d\n", second);
 	
 return 0;
 }
 
+void getNumbers() {
 
+    bool valid = false;
+    do {
+        printf("Enter first number:\n");
+        int n = 0;
+        scanf("%d", &n);
+        getchar();
+        if (n == EOF) {
+            printf("EOF encountered\n");
+        } else if (n == 0) {
+            printf("Invalid input\n");
+        } else {
+            printf("Your number was: %d\n", n);
+            first = n;
+            printf("%d\n", first);
+            valid = true;
+        }
+    } while (!valid);
 
+    valid = false;
 
+    do {
+        printf("Enter second number:\n");
+        int n = 0;
+        scanf("%d", &n);
+        getchar();
+        if (n == EOF) {
+            printf("EOF encountered\n");
+        } else if (n == 0) {
+            printf("Invalid input\n");
+        } else {
+            printf("Your number was: %d\n", n);
+            second = n;
+            printf("%d\n", second);
+            valid = true;
+        }
+    } while (!valid);
 
+    sum = first + second;
+    product = first * second;
 
+    printf("Sum: %d\n", sum);
+    printf("Product: %d\n", product);
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+}
