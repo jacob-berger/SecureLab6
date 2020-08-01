@@ -159,7 +159,8 @@ int fileOpen(){
 		fputs("wrong input. \n", stderr);
 		return 1;
 	}
-	if((fp= fopen(output_file_name, "wt")) == NULL){
+	strcat(output_file_name,".txt");
+	if((fp= fopen(output_file_name, "w+")) == NULL){
 		return 1;
 	}
 	
@@ -177,25 +178,35 @@ return 0;
 }
 
 int fileRead(){
-        int c;
-	FILE *fp;
+   char ch;
+	FILE *fp1,*fp2;
 	printf("\nPlease enter input file name: ");
 	while (getchar() != '\n');
-	if(scanf("%50[a-zA-Z0-9\\.,_-]", output_file_name) != 1){
+	
+	if(scanf("%50[a-zA-Z0-9\\.,_-]", input_file_name) != 1){
 		fputs("wrong input. \n", stderr);
 		return 1;
 	}
-	if((fp= fopen(output_file_name, "r")) == NULL){
-	        printf("Cannot open file!!! ");
+	strcat(input_file_name,".txt");
+	if((fp1= fopen(input_file_name, "r")) == NULL){
+	   printf("Cannot open input file!!! ");
 		return 1;
 	}
-	printf("\n");
-	c = fgetc(fp);
-	while(c != EOF){
-	        printf("%c", c);
-	        c = fgetc(fp);
+	if((fp2= fopen(output_file_name, "a")) == NULL){
+	   printf("Cannot open output file!!! ");
+		return 1;
 	}
-        fclose(fp);
+	while(1){
+	   ch = fgetc(fp1);
+	   if(ch == -1)
+	      break;
+      fputc(ch,fp2);
+	}
+	fclose(fp1);
+	printf("succesful apending to output file!!!\n");
+	getchar();
+   printf("Output File Complete!!!\n");
+fclose(fp2);
 return 0;
 }
 
