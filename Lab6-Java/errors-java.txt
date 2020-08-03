@@ -1,0 +1,27 @@
+Integer is invalid.
+javax.crypto.IllegalBlockSizeException: Input length not multiple of 16 bytes
+	at java.base/com.sun.crypto.provider.CipherCore.finalNoPadding(CipherCore.java:1109)
+	at java.base/com.sun.crypto.provider.CipherCore.fillOutputBuffer(CipherCore.java:1053)
+	at java.base/com.sun.crypto.provider.CipherCore.doFinal(CipherCore.java:853)
+	at java.base/com.sun.crypto.provider.AESCipher.engineDoFinal(AESCipher.java:446)
+	at java.base/javax.crypto.Cipher.doFinal(Cipher.java:2208)
+	at CSCD437Lab6Main.encrypt(CSCD437Lab6Main.java:208)
+	at CSCD437Lab6Main.main(CSCD437Lab6Main.java:100)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:567)
+	at jdk.compiler/com.sun.tools.javac.launcher.Main.execute(Main.java:415)
+	at jdk.compiler/com.sun.tools.javac.launcher.Main.run(Main.java:192)
+	at jdk.compiler/com.sun.tools.javac.launcher.Main.main(Main.java:132)
+java.util.NoSuchElementException: No line found
+	at java.base/java.util.Scanner.nextLine(Scanner.java:1651)
+	at CSCD437Lab6Main.main(CSCD437Lab6Main.java:115)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:567)
+	at jdk.compiler/com.sun.tools.javac.launcher.Main.execute(Main.java:415)
+	at jdk.compiler/com.sun.tools.javac.launcher.Main.run(Main.java:192)
+	at jdk.compiler/com.sun.tools.javac.launcher.Main.main(Main.java:132)
+Could not find input file.
