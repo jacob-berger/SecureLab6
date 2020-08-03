@@ -1,6 +1,3 @@
-# Daniel Tekle
-# Jacob Berger
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <regex.h>
@@ -110,6 +107,8 @@ int firstInt(){
         do {
 		printf("Enter the first int:\n");
             int result = scanf("%d", &firstNumber);
+            int ch;
+            while ((ch = getchar()) != '\n' && ch !=  EOF);
             fflush(stdin);
             if (result != 1) {
                 printf("Invalid input.\n");
@@ -157,6 +156,8 @@ int secondInt(){
         do {
 		printf("Enter the second int:\n");
             int result = scanf("%d", &secondNumber);
+            int ch;
+            while ((ch = getchar()) != '\n' && ch !=  EOF);
             fflush(stdin);
             if (result != 1) {
                 printf("Invalid input.\n");
@@ -405,5 +406,3 @@ static int getPassword(void)
         return(1);
     }
 }
-
-
