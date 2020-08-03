@@ -1,3 +1,6 @@
+// Daniel Tekle
+// Jacob Berger
+
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
@@ -42,13 +45,13 @@ public class CSCD437Lab6Main {
 		boolean validName = false;
 
 		do {
-			System.out.println("Enter last name: ");
-			lastName = kb.nextLine();
-			if (validateString(lastName, "name")) {
+			System.out.println("Enter first name: ");
+			firstName = kb.nextLine();
+			if (validateString(firstName, "name")) {
 
-				System.out.println("Enter first name: ");
-				firstName = kb.nextLine();
-				validName = validateString(firstName, "name");
+				System.out.println("Enter last name: ");
+				lastName = kb.nextLine();
+				validName = validateString(lastName, "name");
 			}
 
 		} while (!validName);
@@ -148,8 +151,8 @@ public class CSCD437Lab6Main {
 			errorOutputStream.close();
 			kb.close();
 		} catch (FileNotFoundException e) {
-			System.out.println("Could not create output file.");
-			System.err.println("Could not create output file.");
+			System.out.println("Could not find input file.");
+			System.err.println("Could not find input file.");
 //			System.out.println(e.getCause());
 		}
 
