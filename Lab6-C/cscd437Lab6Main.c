@@ -105,9 +105,9 @@ int firstInt(){
         int firstNumber;
         int valid = 0;
         do {
+		printf("Enter the first int:\n");
             int result = scanf("%d", &firstNumber);
             fflush(stdin);
-            printf("%d\n", firstNumber);
             if (result != 1) {
                 printf("Invalid input.\n");
                 fprintf(stderr, "Invalid input.\n");
@@ -140,6 +140,7 @@ int firstInt(){
 //	}
 //
 //	first = strtol(first_number,&ptr, 10);
+	regfree(&regex);
 	return 0;
 }
 
@@ -151,9 +152,9 @@ int secondInt(){
         int secondNumber;
         int valid = 0;
         do {
+		printf("Enter the second int:\n");
             int result = scanf("%d", &secondNumber);
             fflush(stdin);
-            printf("%d\n", secondNumber);
             if (result != 1) {
                 printf("Invalid input.\n");
                 fprintf(stderr, "Invalid input.\n");
@@ -163,6 +164,7 @@ int secondInt(){
         } while (valid == 0);
         second = secondNumber;
     }
+    regfree(&regex);
     return 0;
 }
 
@@ -184,6 +186,7 @@ int fileOpen(){
             valid = 1;
         }
     } while (valid == 0);
+    regfree(&regex);
 //	strcat(output_file_name,".txt");
 	if((fp= fopen(output_file_name, "w+")) == NULL){
 		return 1;
@@ -221,6 +224,7 @@ int fileRead(){
             valid = 1;
         }
     } while (valid == 0);
+    regfree(&regex);
 //	strcat(input_file_name,".txt");
 	if((fp1= fopen(input_file_name, "r")) == NULL){
 	   printf("Cannot open input file!!! ");
@@ -386,13 +390,15 @@ static int getPassword(void)
         FILE * fp = fopen("password.txt", "w+");
         if (fp == NULL) {
             printf("Could not create password file.\n");
-
         } else {
             fprintf(fp, "%s", (char*) firstInput);
         }
+        regfree(&regex);
+        fclose(fp);
         return(0);
     } else {
         printf("Passwords did not match.\n");
+        regfree(&regex);
         return(1);
     }
 }
