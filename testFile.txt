@@ -1,3 +1,0 @@
-This is a test of the test file.
-This is the second line of the test file.
-This is the last line of the test file.
