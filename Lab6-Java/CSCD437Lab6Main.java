@@ -8,11 +8,23 @@ import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import java.security.MessageDigest;
+import java.util.Arrays;
+import javax.crypto.KeyGenerator;
+import javax.crypto.SecretKey;
+import javax.crypto.spec.SecretKeySpec;
+import javax.crypto.spec.IvParameterSpec;
+
+import javax.crypto.Cipher;
+import javax.crypto.spec.IvParameterSpec;
+import javax.crypto.spec.SecretKeySpec;
+
 public class CSCD437Lab6Main {
 
 	private static PrintStream errorOutputStream, outputPrintStream;
 	private static String lastName, firstName, inFilename, outFilename;
 	private static int first, second;
+	private static String key = "asdf;lkjqwerpoiu";
 
 
 	public static void main(String[] args) {
@@ -30,11 +42,11 @@ public class CSCD437Lab6Main {
 		boolean validName = false;
 
 		do {
-			System.out.println("Enter last name:");
+			System.out.println("Enter last name: ");
 			lastName = kb.nextLine();
 			if (validateString(lastName, "name")) {
 
-				System.out.println("Enter first name:");
+				System.out.println("Enter first name: ");
 				firstName = kb.nextLine();
 				validName = validateString(firstName, "name");
 			}
@@ -43,10 +55,10 @@ public class CSCD437Lab6Main {
 
 		boolean validInt = false;
 		do {
-			System.out.println("Enter first int:");
+			System.out.println("Enter first int: ");
 			try {
 				first = Integer.parseInt(kb.nextLine());
-				System.out.println("Enter second int:");
+				System.out.println("Enter second int: ");
 				second = Integer.parseInt(kb.nextLine());
 				validInt = true;
 			} catch (NumberFormatException e) {
@@ -57,49 +69,59 @@ public class CSCD437Lab6Main {
 
 		boolean validFileName = false;
 		do {
-			System.out.println("Enter input filename:");
+			System.out.println("Enter input filename: ");
 			inFilename = kb.nextLine();
 			validFileName = validateString(inFilename, "filename");
 		} while (!validFileName);
 
 		validFileName = false;
 		do {
-			System.out.println("Enter output filename:");
+			System.out.println("Enter output filename: ");
 			outFilename = kb.nextLine();
 			validFileName = validateString(outFilename, "filename");
 		} while (!validFileName);
 
 		boolean validPassword = false;
 		do {
-			System.out.println("Enter a password:");
+			System.out.println("Enter a password (10-15 characters): ");
 			String password = kb.nextLine();
 			validPassword = validateString(password, "password");
 
 			if (validPassword) {
-				String salt = BCrypt.gensalt();
-				BCrypt.hashpw(password, salt);
+//				String salt = BCrypt.gensalt();
+//				BCrypt.hashpw(password, salt);
 				File passwordFile = new File("passwords.txt");
 				try {
 					PrintStream printStream = new PrintStream(passwordFile);
-					printStream.println(BCrypt.hashpw(password, salt));
+//					printStream.println(BCrypt.hashpw(password, salt));
+					printStream.println(encrypt(password, key));
 				} catch (IOException e) {
 					System.out.println("Could not create password file.");
 					System.err.println("Could not create password file.");
+				} catch (Exception exception) {
+					exception.printStackTrace();
 				}
-				System.out.println("Retype password:");
+				System.out.println("Retype password: ");
 				String retype = kb.nextLine();
 				validPassword = validateString(retype, "password");
 				String hashedPassword = "";
+				String hashedRetype = "";
 				if (validPassword) {
 					try {
 						Scanner scanner = new Scanner(passwordFile);
 						hashedPassword = scanner.nextLine();
 						scanner.close();
+						hashedRetype = decrypt(retype.getBytes(), key);
 					} catch (FileNotFoundException e) {
 						System.out.println("Could not find passwords.txt");
+					} catch (Exception exception) {
+						exception.printStackTrace();
 					}
-					if (BCrypt.checkpw(retype, hashedPassword)) {
+//					if (BCrypt.checkpw(retype, hashedPassword)) {
+//						System.out.println("Passwords matched.");
+					if (hashedPassword.compareTo(hashedRetype) == 0) {
 						System.out.println("Passwords matched.");
+
 					} else {
 						System.out.println("Passwords did not match.");
 						System.err.println("Passwords did not match.");
@@ -128,6 +150,7 @@ public class CSCD437Lab6Main {
 		} catch (FileNotFoundException e) {
 			System.out.println("Could not create output file.");
 			System.err.println("Could not create output file.");
+//			System.out.println(e.getCause());
 		}
 
 	}
@@ -152,7 +175,7 @@ public class CSCD437Lab6Main {
 				pattern = Pattern.compile("^[\\p{Alnum}\\p{Punct}&&[^\\\\<>:\"/?|*]]+$");
 				break;
 			case "password":
-				pattern = Pattern.compile("^[\\p{Alnum}\\p{Punct}\\s]+$");
+				pattern = Pattern.compile("^[\\p{Alnum}\\p{Punct}\\s]{10,15}$");
 				break;
 			case "name":
 				pattern = Pattern.compile("^[A-Za-z]+(\\s[A-Za-z]*)*$");
@@ -170,6 +193,26 @@ public class CSCD437Lab6Main {
 
 		return matched;
 
+	}
+
+	public static byte[] encrypt(String plain, String encryptionKey) throws Exception {
+
+		String IV = "QWERASDFUIOPJKL;";
+
+		Cipher cipher = Cipher.getInstance("AES/CBC/NoPadding", "SunJCE");
+		SecretKeySpec key = new SecretKeySpec(encryptionKey.getBytes("UTF-8"), "AES");
+		cipher.init(Cipher.ENCRYPT_MODE, key,new IvParameterSpec(IV.getBytes("UTF-8")));
+		return cipher.doFinal(plain.getBytes("UTF-8"));
+	}
+
+	public static String decrypt(byte[] cipherText, String encryptionKey) throws Exception{
+
+		String IV = "QWERASDFUIOPJKL;";
+
+		Cipher cipher = Cipher.getInstance("AES/CBC/NoPadding", "SunJCE");
+		SecretKeySpec key = new SecretKeySpec(encryptionKey.getBytes("UTF-8"), "AES");
+		cipher.init(Cipher.DECRYPT_MODE, key,new IvParameterSpec(IV.getBytes("UTF-8")));
+		return new String(cipher.doFinal(cipherText),"UTF-8");
 	}
 
 }
