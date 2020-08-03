@@ -300,10 +300,10 @@ void doMath() {
 
 int main(void){
     freopen( "errors-c.txt", "w+", stderr );
-//	getName();
-//	getNumber();
+	getName();
+	getNumber();
 //	printf("First number: %d Second number: %d\n", first, second);
-//	doMath();
+	doMath();
 	getFileOutput();
 	getFileInput();
     getPassword();
